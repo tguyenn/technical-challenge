@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: docker/app/Dockerfile
+    stdin_open: true  # make sure u can actually interact with it
+    tty: true         
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432

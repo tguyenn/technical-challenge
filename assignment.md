@@ -3,6 +3,7 @@
 **__Assignment:__**
 
 Design a microservice-based API for user management using Docker and PostgreSQL.
+
 **Technical Requirements**
 * Containerize the application using Docker
 * Use PostgreSQL as the database
