@@ -1,24 +1,47 @@
-# Use postgres/example user/password credentials
-version: '3.9'
-
+version: '3.8'
 services:
-
-  db:
-    image: postgres
-    restart: always
-    # set shared memory limit when using docker-compose
-    shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
     environment:
-      POSTGRES_PASSWORD: example
-
-  adminer:
-    image: adminer
-    restart: always
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=userdb
     ports:
-      - 8080:8080
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy  # Wait for PostgreSQL to be healthy
+    networks:
+      - user_network
+    volumes:
+      - .:/app
+
+  postgres:
+    build:
+      context: ./docker/postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - user_network
+    healthcheck:  # Add a health check for PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U user -d userdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  user_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
