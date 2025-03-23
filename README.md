@@ -1,33 +1,24 @@
-notes:
-- what is ORM?
-    - ORM (Object-Relational Mapping) is a programming technique that allows you to interact with a relational database (i.e. postgresql)
-- 
+# Introduction
 
-todo: 
-- need to make database persistent between container sessions
-    - smth smth mounting volume?
+Hello! This user management application consists of
+1. Front facing GoLang CLI that allows the user to interact with the database contents
+1. PostgreSQL server
 
-- populate build script
-    - what else do i need to do besides "docker-compose build"??
-- populate startup script
-    - startup script should start up both containers (prob smth docker-compose thing) and then expose a CLI interface for user to interact with the database
+The CLI supports actions like creating, reading, updating and deleting database entries.
 
-Need 2 containers:
-1. front facing Go client that takes CLI user input (GORM)
-1. postgresql
+The PostgreSQL comes prepopulated with some sample user data, which consists of employee's ID, name, email, and password. Note that database contents are stored in a volume and can be viewed with `docker volume inspect postgres_data`
 
 # Setup
 If this is your first time using this project, then please build the docker image in the `techincal_challenge` directory:
 
 ```bash
-bash build.sh
-
+docker-compose build
 ```
 
-# Running the Docker Container
-Simply run the startup script and be on your merry way :)
+# Launching the application
+Simply launch the containers, and you will have a CLI after waiting a moment.
 
 ```bash
-bash startup.sh
+docker-compose run -it app
 ```
 

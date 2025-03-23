@@ -28,8 +28,8 @@ func main() {
     }
 
     fmt.Println("✅ Database migration successful!")
+    fmt.Println("Starting the database CLI client...")
 
-	fmt.Println("entering loop!")
 	StartCLI(db)
 
 }
