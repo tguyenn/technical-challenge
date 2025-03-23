@@ -1,4 +1,6 @@
-#
+# yeah this Dockerfile isn't actually necessary because Docker can directly pull PostgreSQL from Docker Hub, but I didn't know that until after I put this here :). works fine
+
+
 # NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
 #
 # PLEASE DO NOT EDIT IT DIRECTLY.
