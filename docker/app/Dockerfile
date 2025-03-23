@@ -23,13 +23,6 @@ RUN apk --no-cache add ca-certificates
 # Copy the built Go binary from the previous stage
 COPY --from=builder /app/user-management-api /usr/local/bin/user-management-api
 
-# Set environment variables (can also use .env file or Docker Compose for dynamic values)
-ENV DB_HOST=postgres
-ENV DB_PORT=5432
-ENV DB_USER=user
-ENV DB_PASSWORD=password
-ENV DB_NAME=userdb
-
 # Expose port 8080
 EXPOSE 8080
 

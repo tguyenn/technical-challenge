@@ -11,6 +11,9 @@ services:
       - DB_USER=user
       - DB_PASSWORD=password
       - DB_NAME=userdb
+      - DB_TIMEZONE=America/Chicago
+      - DB_SSLMODE=disable
+
     ports:
       - "8080:8080"
     depends_on:
