@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"strconv"
-
 	"gorm.io/gorm"
 )
 
@@ -30,7 +29,7 @@ func createEntry(db *gorm.DB) {
     result := db.Create(&newUser)
 
     if result.Error != nil {
-        fmt.Println("❌ Failed to create user:", result.Error)
+        fmt.Println("Failed to create user with error", result.Error)
     } else {
 		fmt.Println("Successfully created new user with ID:", newUser.ID)
 	}
@@ -51,7 +50,7 @@ func readEntry(db *gorm.DB) {
 	result := db.First(&user, userId)
 	
 	if result.Error != nil {
-	fmt.Println("❌ Failed to find user with error", result.Error)
+	fmt.Println("Failed to find user with error", result.Error)
 	} else {
 		fmt.Println("Found user: ", user)
 	}
@@ -73,7 +72,7 @@ func updateEntry(db *gorm.DB) {
 	result := db.First(&user, userId)
 
 	if result.Error != nil {
-        fmt.Println("❌ Failed to find user:", result.Error)
+        fmt.Println("Failed to find user with error:", result.Error)
     } else {
 		fmt.Println("Found user: ", user)
 	}
@@ -92,9 +91,9 @@ func updateEntry(db *gorm.DB) {
 
     saveResult := db.Save(&user)
     if saveResult.Error != nil {
-        fmt.Println("❌ Failed to update user:", saveResult.Error)
+        fmt.Println("Failed to update user with error", saveResult.Error)
     } else {
-        fmt.Println("✅ Successfully updated user with ID:", user.ID)
+        fmt.Println("Successfully updated user with ID:", user.ID)
     }
 }
 
@@ -114,7 +113,7 @@ func delEntry(db *gorm.DB) {
 	result := db.First(&user, userId)
 
 	if result.Error != nil {
-        fmt.Println("❌ Failed to find user:", result.Error)
+        fmt.Println("Failed to find user with error", result.Error)
     } else {
 		fmt.Println("Deleting user: ", user)
 	}
@@ -150,7 +149,7 @@ func loopCLI(db *gorm.DB) {
 		} else if action == "DD" {
 			dumpData(db)
 		} else if action == "E" {
-			fmt.Println("Exiting CLI and killing container. Goodbye!")
+			fmt.Println("Exiting CLI and killing app container. Goodbye!")
 			break
 		} else {
 			fmt.Println("Invalid action :( try again")
