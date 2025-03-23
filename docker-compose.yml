@@ -15,7 +15,7 @@ services:
       - "8080:8080"
     depends_on:
       postgres:
-        condition: service_healthy  # Wait for PostgreSQL to be healthy
+        condition: service_healthy  # wait for postgres DB to be ready
     networks:
       - user_network
     volumes:

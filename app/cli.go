@@ -1,3 +1,5 @@
+// manage user input and DB interaction
+
 package main
 
 import (
@@ -12,16 +14,15 @@ import (
 var reader = bufio.NewReader(os.Stdin)
 
 func createEntry(db *gorm.DB) {
-	fmt.Println("Creating new entry!")
-	fmt.Print("Enter user name: ")
+	fmt.Print("Enter new user name: ")
     name, _ := reader.ReadString('\n')
 	name = strings.TrimSpace(name)
 
-    fmt.Print("Enter user email: ")
+    fmt.Print("Enter new user email: ")
     email, _ := reader.ReadString('\n')
 	email = strings.TrimSpace(email)
 
-    fmt.Print("Enter user password: ")
+    fmt.Print("Enter new user password: ")
     password, _ := reader.ReadString('\n')
 	password = strings.TrimSpace(password)
 
@@ -74,18 +75,18 @@ func updateEntry(db *gorm.DB) {
 	if result.Error != nil {
         fmt.Println("Failed to find user with error:", result.Error)
     } else {
-		fmt.Println("Found user: ", user)
+		fmt.Println("Found user to update: ", user)
 	}
 	
-	fmt.Print("Enter new user name: ")
+	fmt.Print("Enter updated user name: ")
     user.Name, _ = reader.ReadString('\n')
 	user.Name = strings.TrimSpace(user.Name)
 
-    fmt.Print("Enter new user email: ")
+    fmt.Print("Enter updated user email: ")
     user.Email, _ = reader.ReadString('\n')
 	user.Email = strings.TrimSpace(user.Email)
 
-    fmt.Print("Enter new user password: ")
+    fmt.Print("Enter updated user password: ")
     user.Password, _ = reader.ReadString('\n')
 	user.Password = strings.TrimSpace(user.Password)
 

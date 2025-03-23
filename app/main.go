@@ -10,25 +10,21 @@ import (
 )
 
 func main() {
-    // PostgreSQL DSN (Data Source Name)
     dsn := "host=postgres user=user password=password dbname=userdb port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{}) // dont want to make global variable bc would also have to make this protected information global (bad)
-
-    // Connect to the database
+    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{}) // global variable creds bad?
     if err != nil {
         log.Fatal("Failed to connect to database:", err)
     }
+    fmt.Println("Connected to PostgreSQL successfully!")
 
-    fmt.Println("✅ Connected to PostgreSQL successfully!")
-
-    // AutoMigrate to create/update table schema
     err = db.AutoMigrate(&User{})
     if err != nil {
-        log.Fatal("❌ Failed to migrate database:", err)
+        log.Fatal("Failed to migrate database with error", err)
+        return;
     }
+    fmt.Println("Database migration successful!")
 
-    fmt.Println("✅ Database migration successful!")
-    fmt.Println("Starting the database CLI client...")
+    fmt.Println("Starting the database CLI...")
 
 	StartCLI(db)
 
