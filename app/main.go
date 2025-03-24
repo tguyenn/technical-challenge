@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-    // fetch dynamic envionrment variables defined in docker-compose.yml
+    // fetch dynamic environment variables defined in docker-compose.yml
     host := os.Getenv("DB_HOST")
     user := os.Getenv("DB_USER")
     password := os.Getenv("DB_PASSWORD")
@@ -22,19 +22,15 @@ func main() {
     timezone := os.Getenv("DB_TIMEZONE")
     dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", host, user, password, dbname, port, sslmode, timezone)
 
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{}) // global variable creds bad?
+    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
         log.Fatal("Failed to connect to database:", err)
     }
     fmt.Println("Connected to PostgreSQL successfully!")
 
-    err = db.AutoMigrate(&User{})
-    if err != nil {
-        log.Fatal("Failed to migrate database with error", err)
-        return;
-    }
-    fmt.Println("Database migration successful!")
-
+    r := setupRouter(db)
+    r.Run(":8080")
+    
     fmt.Println("Starting the database CLI...")
 
 	StartCLI(db)

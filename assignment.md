@@ -5,28 +5,28 @@
 Design a microservice-based API for user management using Docker and PostgreSQL.
 
 **Technical Requirements**
-~~* Containerize the application using Docker~~
-~~* Use PostgreSQL as the database~~
-~~* Create a Docker Compose configuration~~
-~~* Implement a robust user management service~~
+* Containerize the application using Docker
+* Use PostgreSQL as the database
+* Create a Docker Compose configuration
+* Implement a robust user management service
     
 **Mandatory Components**
-* ~~Dockerfile~~
+* Dockerfile
     * Define application environment
     * Set up necessary dependencies
-* ~~Docker Compose~~
+* Docker Compose
     * Configure application service
     * Set up PostgreSQL database service
     * Define network and volume mappings
-* ~~Database~~
+* Database
     * PostgreSQL container
     * User management schema
     * Connection configuration
 
 **API Design Considerations**
-    ~~* Design endpoints for comprehensive user lifecycle management~~
-    ~~* Implement robust data handling~~
-    ~~* Ensure data integrity and validation~~
+    * Design endpoints for comprehensive user lifecycle management
+    * Implement robust data handling
+    * Ensure data integrity and validation
 
 **Evaluation Criteria**
     * Proper Docker containerization
