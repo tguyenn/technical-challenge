@@ -14,6 +14,16 @@ import (
 	"strings"
 )
 
+func prettyPrintJSON(jsonData []byte) {
+	var prettyJSON bytes.Buffer
+	err := json.Indent(&prettyJSON, jsonData, "", "  ")
+	if err != nil {
+		fmt.Println("Error formatting JSON:", err)
+		return
+	}
+	fmt.Println(prettyJSON.String())
+}
+
 const baseURL = "http://localhost:8080" // Replace with your API's base URL
 
 var reader = bufio.NewReader(os.Stdin)
@@ -44,7 +54,7 @@ func createUser() {
     defer resp.Body.Close()
 
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("Response:", string(body))
+	prettyPrintJSON(body)
 }
 
 func getUserByID() {
@@ -61,7 +71,7 @@ func getUserByID() {
     defer resp.Body.Close()
 
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("Response:", string(body))
+	prettyPrintJSON(body)
 }
 	
 func updateUser() {
@@ -102,7 +112,7 @@ func updateUser() {
     defer resp.Body.Close()
 
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("Response:", string(body))
+	prettyPrintJSON(body)
 }
 
 func deleteUser() {
@@ -126,7 +136,7 @@ func deleteUser() {
     defer resp.Body.Close()
 
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("Response:", string(body))
+	prettyPrintJSON(body)
 }
 
 func getAllUsers() {
@@ -138,7 +148,7 @@ func getAllUsers() {
     defer resp.Body.Close()
 
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("Response:", string(body))
+	prettyPrintJSON(body)
 }
 
 

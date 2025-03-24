@@ -1,4 +1,4 @@
-// Initialize database connection and enter into CLI loop
+// Initialize database connection, init Gin router, and enter into CLI loop
 
 package main
 
@@ -28,8 +28,8 @@ func main() {
     }
     fmt.Println("Connected to PostgreSQL successfully!")
     
+    // flag to ensure CLI only starts after the Gin router is up and running
     routerReady := make(chan bool)
-
 
     // anonymous function that allows Gin HTTP server to not block the CLI from starting up
     go func() {
@@ -41,7 +41,7 @@ func main() {
         }
     }()
     
-    <-routerReady // wait for gin router to be ready
+    <-routerReady
     fmt.Println("Starting the database CLI...")
 
 	StartCLI()

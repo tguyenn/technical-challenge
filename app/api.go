@@ -9,7 +9,9 @@ import (
     "gorm.io/gorm"
 )
 
-// darabase handler functions
+
+
+// database handler functions
 
 // CreateUser creates a new user in the database
 func CreateUser(db *gorm.DB, user *User) error {
@@ -52,6 +54,10 @@ func GetAllUsers(db *gorm.DB) ([]User, error) {
 func setupRouter(db *gorm.DB) *gin.Engine {
     r := gin.Default()
 
+    // disable debug message spam
+    gin.SetMode(gin.ReleaseMode)
+
+
     // Create
     r.POST("/users", func(c *gin.Context) {
         var user User
@@ -93,14 +99,25 @@ func setupRouter(db *gorm.DB) *gin.Engine {
             c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
             return
         }
-        if err := c.ShouldBindJSON(user); err != nil {
-            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-            return
-        }
-        if err := UpdateUser(db, user); err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
-            return
-        }
+
+    // Bind the JSON payload to a temporary object
+    var updatedData User
+    if err := c.ShouldBindJSON(&updatedData); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Update the fields of the existing user, but preserve the ID
+    user.Name = updatedData.Name
+    user.Email = updatedData.Email
+    user.Password = updatedData.Password
+
+    // Update the user in the database
+    if err := UpdateUser(db, user); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+        return
+    }
+    
         c.JSON(http.StatusOK, user)
     })
 
