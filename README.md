@@ -30,3 +30,19 @@ Make sure to run the following command to kill any remaining services:
 ```bash
 docker-compose down
 ```
+
+# Debugging
+If you run into an issue like the following, the problem may be caused by Git when cloning the repository.
+
+
+```bash
+postgres-1  | /usr/bin/env: ‘bash\r’: No such file or directory
+postgres-1  | /usr/bin/env: use -[v]S to pass options in shebang lines
+postgres-1 exited with code 127
+```
+
+To resolve, please change the way Git handles line endings by running this config command:
+```bash
+git config --global core.autocrlf false
+
+```
