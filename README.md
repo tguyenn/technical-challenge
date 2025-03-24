@@ -9,9 +9,10 @@ Hello! This user management application consists of 2 containers:
 * Note that database contents are stored in a volume and persist between container sessions.
 
 # Setup
-If this is your first time using this project, then please build the docker image in the `techincal_challenge` directory using your terminal of choice:
+If this is your first time using this project, then please run the following in the `techincal_challenge` directory using your terminal of choice:
 
 ```bash
+export PATH=$PATH:$(pwd)/docker/postgres
 docker-compose build
 ```
 

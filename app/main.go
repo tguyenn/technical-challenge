@@ -27,12 +27,23 @@ func main() {
         log.Fatal("Failed to connect to database:", err)
     }
     fmt.Println("Connected to PostgreSQL successfully!")
-
-    r := setupRouter(db)
-    r.Run(":8080")
     
+    routerReady := make(chan bool)
+
+
+    // anonymous function that allows Gin HTTP server to not block the CLI from starting up
+    go func() {
+        r := setupRouter(db)
+        fmt.Println("Gin router initialized!")
+        routerReady <- true // Signal that the router is ready
+        if err := r.Run(":8080"); err != nil {
+            log.Fatal("Failed to start Gin server:", err)
+        }
+    }()
+    
+    <-routerReady // wait for gin router to be ready
     fmt.Println("Starting the database CLI...")
 
-	StartCLI(db)
+	StartCLI()
 
 }

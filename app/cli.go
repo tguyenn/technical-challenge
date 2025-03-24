@@ -1,83 +1,27 @@
-// manage user input and DB interaction
+// manage user input and makes appropriate HTTP requests to database
 
 package main
 
 import (
+	"bytes"
+    "encoding/json"
+    "io/ioutil"
+    "net/http"
+
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
-	"strconv"
-	"gorm.io/gorm"
 )
+
+const baseURL = "http://localhost:8080" // Replace with your API's base URL
 
 var reader = bufio.NewReader(os.Stdin)
 
-func createEntry(db *gorm.DB) {
-	fmt.Print("Enter new user name: ")
-    name, _ := reader.ReadString('\n')
-	name = strings.TrimSpace(name)
+func createUser() {
 
-    fmt.Print("Enter new user email: ")
-    email, _ := reader.ReadString('\n')
-	email = strings.TrimSpace(email)
-
-    fmt.Print("Enter new user password: ")
-    password, _ := reader.ReadString('\n')
-	password = strings.TrimSpace(password)
-
-    newUser := User{Name: name, Email: email, Password: password}
-    result := db.Create(&newUser)
-
-    if result.Error != nil {
-        fmt.Println("Failed to create user with error", result.Error)
-    } else {
-		fmt.Println("Successfully created new user with ID:", newUser.ID)
-	}
-}
-
-func readEntry(db *gorm.DB) {
-	fmt.Print("Enter User ID to look up: ")
-    input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	userId, err := strconv.Atoi(input)
-
-	if err != nil {
-		fmt.Println("Invalid User ID! Please provide a number")
-		return
-	}
-	
 	var user User
-	result := db.First(&user, userId)
-	
-	if result.Error != nil {
-	fmt.Println("Failed to find user with error", result.Error)
-	} else {
-		fmt.Println("Found user: ", user)
-	}
-}
-	
-func updateEntry(db *gorm.DB) {
-	fmt.Print("Enter User ID of User to update: ")
 
-    input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	userId, err := strconv.Atoi(input)
-
-	if err != nil {
-		fmt.Println("Invalid User ID! Please provide a number")
-		return
-	}
-	
-	var user User
-	result := db.First(&user, userId)
-
-	if result.Error != nil {
-        fmt.Println("Failed to find user with error:", result.Error)
-    } else {
-		fmt.Println("Found user to update: ", user)
-	}
-	
 	fmt.Print("Enter updated user name: ")
     user.Name, _ = reader.ReadString('\n')
 	user.Name = strings.TrimSpace(user.Name)
@@ -90,65 +34,130 @@ func updateEntry(db *gorm.DB) {
     user.Password, _ = reader.ReadString('\n')
 	user.Password = strings.TrimSpace(user.Password)
 
-    saveResult := db.Save(&user)
-    if saveResult.Error != nil {
-        fmt.Println("Failed to update user with error", saveResult.Error)
-    } else {
-        fmt.Println("Successfully updated user with ID:", user.ID)
+    jsonData, _ := json.Marshal(user)
+
+    resp, err := http.Post(baseURL+"/users", "application/json", bytes.NewBuffer(jsonData))
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
     }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("Response:", string(body))
 }
 
-func delEntry(db *gorm.DB) {
-	fmt.Print("Enter User ID to delete:")
+func getUserByID() {
 
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	userId, err := strconv.Atoi(input)
+	fmt.Print("Enter User ID to lookup:")
+	id, _ := reader.ReadString('\n')
+	id = strings.TrimSpace(id)
 
-	if err != nil {
-		fmt.Println("Invalid User ID! Please provide a number")
-		return
-	}
+    resp, err := http.Get(fmt.Sprintf("%s/users/%s", baseURL, id))
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("Response:", string(body))
+}
+	
+func updateUser() {
 	
 	var user User
-	result := db.First(&user, userId)
 
-	if result.Error != nil {
-        fmt.Println("Failed to find user with error", result.Error)
-    } else {
-		fmt.Println("Deleting user: ", user)
-	}
+	fmt.Print("Enter User ID of User to update: ")
+	id, _ := reader.ReadString('\n')
+	id = strings.TrimSpace(id)
 
-	db.Delete(&user)
+	fmt.Print("Enter updated user name: ")
+    user.Name, _ = reader.ReadString('\n')
+	user.Name = strings.TrimSpace(user.Name)
 
-}
+    fmt.Print("Enter updated user email: ")
+    user.Email, _ = reader.ReadString('\n')
+	user.Email = strings.TrimSpace(user.Email)
 
-func dumpData(db *gorm.DB) {
-    var users []User
-    db.Find(&users)
-    fmt.Println("List of users:")
-	for _, user := range users {
-        fmt.Printf("ID: %d, Name: %s, Email: %s, Password: %s\n", user.ID, user.Name, user.Email, user.Password)
+    fmt.Print("Enter updated user password: ")
+    user.Password, _ = reader.ReadString('\n')
+	user.Password = strings.TrimSpace(user.Password)
+
+    jsonData, _ := json.Marshal(user)
+
+    req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/users/%s", baseURL, id), bytes.NewBuffer(jsonData))
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
     }
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("Response:", string(body))
+}
+
+func deleteUser() {
+
+	fmt.Print("Enter User ID to delete:")
+	id, _ := reader.ReadString('\n')
+	id = strings.TrimSpace(id)
+
+    req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/users/%s", baseURL, id), nil)
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("Response:", string(body))
+}
+
+func getAllUsers() {
+    resp, err := http.Get(baseURL + "/users")
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println("Response:", string(body))
 }
 
 
-func loopCLI(db *gorm.DB) {
+func loopCLI() {
     reader := bufio.NewReader(os.Stdin)
 	for { // CLI while loop
 		fmt.Println("Please enter one of the following actions and press enter: [C] Create [R] Read [U] Update [D] Delete [DD] Dump database [E] Exit")
 		action, _ := reader.ReadString('\n')
 		action = strings.TrimSpace(action)
 		if action == "C" {
-			createEntry(db)
+			createUser()
 		} else if action == "R" {
-			readEntry(db)
+			getUserByID()
 		} else if action == "U" {
-			updateEntry(db)
+			updateUser()
 		} else if action == "D" {
-			delEntry(db)
+			deleteUser()
 		} else if action == "DD" {
-			dumpData(db)
+			getAllUsers()
 		} else if action == "E" {
 			fmt.Println("Exiting CLI and killing app container. Goodbye!")
 			break
@@ -158,7 +167,7 @@ func loopCLI(db *gorm.DB) {
 	}
 }
 
-func StartCLI(db *gorm.DB) {
+func StartCLI() {
 	fmt.Println("Welcome to the greatest user management CLI of all time!")
-	loopCLI(db)
+	loopCLI()
 }
