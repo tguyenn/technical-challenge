@@ -14,6 +14,7 @@ import (
 	"strings"
 )
 
+// print the API responses in a more easily readable format
 func prettyPrintJSON(jsonData []byte) {
 	var prettyJSON bytes.Buffer
 	err := json.Indent(&prettyJSON, jsonData, "", "  ")
@@ -24,7 +25,7 @@ func prettyPrintJSON(jsonData []byte) {
 	fmt.Println(prettyJSON.String())
 }
 
-const baseURL = "http://localhost:8080" // Replace with your API's base URL
+const baseURL = "http://localhost:8080" 
 
 var reader = bufio.NewReader(os.Stdin)
 
@@ -34,7 +35,7 @@ func createUser() {
 
 	fmt.Print("Enter updated user name: ")
     user.Name, _ = reader.ReadString('\n')
-	user.Name = strings.TrimSpace(user.Name)
+	user.Name = strings.TrimSpace(user.Name) // delete trailing whitespace (newline chars and spaces)
 
     fmt.Print("Enter updated user email: ")
     user.Email, _ = reader.ReadString('\n')
@@ -44,9 +45,9 @@ func createUser() {
     user.Password, _ = reader.ReadString('\n')
 	user.Password = strings.TrimSpace(user.Password)
 
-    jsonData, _ := json.Marshal(user)
+    jsonData, _ := json.Marshal(user) // converts the user into a JSON data string
 
-    resp, err := http.Post(baseURL+"/users", "application/json", bytes.NewBuffer(jsonData))
+    resp, err := http.Post(baseURL+"/users", "application/json", bytes.NewBuffer(jsonData)) // url, content type, actual content
     if err != nil {
         fmt.Println("Error:", err)
         return
@@ -57,7 +58,7 @@ func createUser() {
 	prettyPrintJSON(body)
 }
 
-func getUserByID() {
+func readUserByID() {
 
 	fmt.Print("Enter User ID to lookup:")
 	id, _ := reader.ReadString('\n')
@@ -96,7 +97,7 @@ func updateUser() {
 
     jsonData, _ := json.Marshal(user)
 
-    req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/users/%s", baseURL, id), bytes.NewBuffer(jsonData))
+    req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/users/%s", baseURL, id), bytes.NewBuffer(jsonData)) // not natively supported in new/http package
     if err != nil {
         fmt.Println("Error:", err)
         return
@@ -139,7 +140,7 @@ func deleteUser() {
 	prettyPrintJSON(body)
 }
 
-func getAllUsers() {
+func dumpAllUsers() {
     resp, err := http.Get(baseURL + "/users")
     if err != nil {
         fmt.Println("Error:", err)
@@ -161,13 +162,13 @@ func loopCLI() {
 		if action == "C" {
 			createUser()
 		} else if action == "R" {
-			getUserByID()
+			readUserByID()
 		} else if action == "U" {
 			updateUser()
 		} else if action == "D" {
 			deleteUser()
 		} else if action == "DD" {
-			getAllUsers()
+			dumpAllUsers()
 		} else if action == "E" {
 			fmt.Println("Exiting CLI and killing app container. Goodbye!")
 			break

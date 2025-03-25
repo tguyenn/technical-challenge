@@ -1,3 +1,6 @@
+// setup api endpoint and execute CRUD operations
+// returns JSON data
+
 package main
 
 import (
@@ -9,17 +12,15 @@ import (
     "gorm.io/gorm"
 )
 
+// database interaction helper functions
 
-
-// database handler functions
-
-// CreateUser creates a new user in the database
-func CreateUser(db *gorm.DB, user *User) error {
+// create
+func dbCreateUser(db *gorm.DB, user *User) error {
     return db.Create(user).Error
 }
 
-// GetUserByID retrieves a user by ID
-func GetUserByID(db *gorm.DB, id int) (*User, error) {
+// read
+func dbReadUser(db *gorm.DB, id int) (*User, error) {
     var user User
     if err := db.First(&user, id).Error; err != nil {
         if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -30,18 +31,18 @@ func GetUserByID(db *gorm.DB, id int) (*User, error) {
     return &user, nil
 }
 
-// UpdateUser updates an existing user
-func UpdateUser(db *gorm.DB, user *User) error {
+// update
+func dbUpdateUser(db *gorm.DB, user *User) error {
     return db.Save(user).Error
 }
 
-// DeleteUser deletes a user by ID
-func DeleteUser(db *gorm.DB, id int) error {
+// delete
+func dbDeleteUser(db *gorm.DB, id int) error {
     return db.Delete(&User{}, id).Error
 }
 
-// GetAllUsers retrieves all users
-func GetAllUsers(db *gorm.DB) ([]User, error) {
+// dump data
+func dbDumpUsers(db *gorm.DB) ([]User, error) {
     var users []User
     if err := db.Find(&users).Error; err != nil {
         return nil, err
@@ -50,7 +51,7 @@ func GetAllUsers(db *gorm.DB) ([]User, error) {
 }
 
 
-// sets up api endpoints
+// register api endpoints. Gin will run the required operation on appropriate HTTP request
 func setupRouter(db *gorm.DB) *gin.Engine {
     r := gin.Default()
 
@@ -58,28 +59,28 @@ func setupRouter(db *gorm.DB) *gin.Engine {
     gin.SetMode(gin.ReleaseMode)
 
 
-    // Create
+    // create
     r.POST("/users", func(c *gin.Context) {
         var user User
         if err := c.ShouldBindJSON(&user); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
         }
-        if err := CreateUser(db, &user); err != nil {
+        if err := dbCreateUser(db, &user); err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
             return
         }
         c.JSON(http.StatusCreated, user)
     })
 
-    // Read
+    // read
     r.GET("/users/:id", func(c *gin.Context) {
         id, err := strconv.Atoi(c.Param("id"))
         if err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
-        user, err := GetUserByID(db, id)
+        user, err := dbReadUser(db, id)
         if err != nil {
             c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
             return
@@ -87,37 +88,38 @@ func setupRouter(db *gorm.DB) *gin.Engine {
         c.JSON(http.StatusOK, user)
     })
 
-    // Update
+    // update
     r.PUT("/users/:id", func(c *gin.Context) {
         id, err := strconv.Atoi(c.Param("id"))
         if err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
-        user, err := GetUserByID(db, id)
+        user, err := dbReadUser(db, id)
         if err != nil {
             c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
             return
         }
 
-    // Bind the JSON payload to a temporary object
+    // buffer the user data so ID is preserved
+    // todo: figure out if there is a better way to do this
     var updatedData User
     if err := c.ShouldBindJSON(&updatedData); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    // Update the fields of the existing user, but preserve the ID
+    // update the fields of the existing user, but preserve ID
     user.Name = updatedData.Name
     user.Email = updatedData.Email
     user.Password = updatedData.Password
 
     // Update the user in the database
-    if err := UpdateUser(db, user); err != nil {
+    if err := dbUpdateUser(db, user); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
         return
     }
-    
+
         c.JSON(http.StatusOK, user)
     })
 
@@ -128,7 +130,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
-        if err := DeleteUser(db, id); err != nil {
+        if err := dbDeleteUser(db, id); err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
             return
         }
@@ -137,7 +139,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
 
     // Read All
     r.GET("/users", func(c *gin.Context) {
-        users, err := GetAllUsers(db)
+        users, err := dbDumpUsers(db)
         if err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
             return

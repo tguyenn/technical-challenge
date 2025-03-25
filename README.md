@@ -5,11 +5,13 @@ Hello! This user management application consists of 2 containers:
 1. PostgreSQL server
 
 * The GoLang CLI application supports actions like creating, reading, updating and deleting database entries.
+    * This CLI currently sends HTTP requests to port 8080, which the Gin API server listens on.
+    * API will process said request and return JSON data.
 * The PostgreSQL comes prepopulated with some sample user data, which consists of employee's ID, name, email, and password. 
 * Note that database contents are stored in a volume and persist between container sessions.
 
 # Setup
-If this is your first time using this project, then please run the following in the `techincal_challenge` directory using your terminal of choice:
+If this is your first time using this project, then please run the following in the `techincal_challenge` directory using a Linux environment (i.e. Ubuntu):
 
 ```bash
 export PATH=$PATH:$(pwd)/docker/postgres
@@ -26,13 +28,13 @@ docker-compose run -it app
 # Exiting the application
 When prompted to pick an action, choose the `E` option to exit. This will put you back into your system's terminal.
 
-Run the following command in your terminal to ensure all services (i.e. PostgreSQL) ends:
+Run the following command in your terminal to ensure all services (i.e. PostgreSQL) end:
 
 ```bash
 docker-compose down
 ```
 
-# Debugging
+<!-- # Debugging
 If you run into the following issue when trying to launch the services, the problem may be caused by Git when cloning the repository.
 
 ```bash
@@ -46,4 +48,4 @@ To resolve, please change the way Git handles line endings by running this confi
 git config --global core.autocrlf false
 ```
 
-Then reclone the repository with the new Git confguration and try building/running again.
+Then reclone the repository with the new Git confguration and try building/running again. -->
