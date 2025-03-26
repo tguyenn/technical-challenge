@@ -11,17 +11,28 @@ Hello! This user management application consists of 2 containers:
 * Note that database contents are stored in a volume and persist between container sessions.
 
 # Setup
-If this is your first time using this project, then please run the following in the `techincal_challenge` directory using a Linux environment (i.e. Ubuntu):
+Clone this repository:
+```bash
+git clone git@github.com:tguyenn/technical-challenge.git
+cd technical_challenge
+```
 
+## Option 1 - Build images from source
 ```bash
 docker-compose build
 ```
 
+## Option 2 - Pull images from DockerHub
+```bash
+docker pull tguyen/technical-challenge-app:latest
+docker pull tguyen/technical-challenge-postgres:latest
+```
+
 # Launching the services
-Simply launch the containers, and you will have a CLI after waiting a moment:
+Simply launch the services, and you will have a CLI after waiting a moment:
 
 ```bash
-docker-compose run -it app
+docker-compose run --service-ports -it app
 ```
 
 # Exiting the application
@@ -32,19 +43,3 @@ Run the following command in your terminal to ensure all services (i.e. PostgreS
 ```bash
 docker-compose down
 ```
-
-<!-- # Debugging
-If you run into the following issue when trying to launch the services, the problem may be caused by Git when cloning the repository.
-
-```bash
-postgres-1  | /usr/bin/env: ‘bash\r’: No such file or directory
-postgres-1  | /usr/bin/env: use -[v]S to pass options in shebang lines
-postgres-1 exited with code 127
-```
-
-To resolve, please change the way Git handles line endings by running this config command:
-```bash
-git config --global core.autocrlf false
-```
-
-Then reclone the repository with the new Git confguration and try building/running again. -->
