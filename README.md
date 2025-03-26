@@ -5,8 +5,7 @@ Hello! This user management application consists of 2 containers:
 1. PostgreSQL server
 
 * The GoLang CLI application supports actions like creating, reading, updating and deleting database entries.
-    * This CLI currently sends HTTP requests to port 8080, which the Gin API server listens on.
-    * API will process said request and return JSON data.
+    * This CLI currently sends HTTP requests to port 8080 which the Gin API server listens to and processes requests.
 * The PostgreSQL comes prepopulated with some sample user data, which consists of employee's ID, name, email, and password. 
 * Note that database contents are stored in a volume and persist between container sessions.
 
@@ -14,9 +13,10 @@ Hello! This user management application consists of 2 containers:
 Clone this repository:
 ```bash
 git clone git@github.com:tguyenn/technical-challenge.git
-cd technical_challenge
+cd technical-challenge
 ```
 
+Ensure the Docker daemon is active!
 ### Option 1 - Build images from source
 ```bash
 docker-compose build

@@ -17,7 +17,6 @@ import (
 const baseURL = "http://localhost:8080" 
 var reader = bufio.NewReader(os.Stdin)
 
-
 // print the API responses in a more easily readable format
 func prettyPrintJSON(jsonData []byte) {
 	var prettyJSON bytes.Buffer
@@ -33,15 +32,15 @@ func createUser() {
 
 	var user User
 
-	fmt.Print("Enter updated user name: ")
+	fmt.Print("Enter new user name: ")
     user.Name, _ = reader.ReadString('\n')
 	user.Name = strings.TrimSpace(user.Name) // delete trailing whitespace (newline chars and spaces)
 
-    fmt.Print("Enter updated user email: ")
+    fmt.Print("Enter new user email: ")
     user.Email, _ = reader.ReadString('\n')
 	user.Email = strings.TrimSpace(user.Email)
 
-    fmt.Print("Enter updated user password: ")
+    fmt.Print("Enter new user password: ")
     user.Password, _ = reader.ReadString('\n')
 	user.Password = strings.TrimSpace(user.Password)
 
@@ -104,6 +103,7 @@ func updateUser() {
     }
     req.Header.Set("Content-Type", "application/json")
 
+    // need this for non-natively supported HTTP requests
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
@@ -140,7 +140,7 @@ func deleteUser() {
 	prettyPrintJSON(body)
 }
 
-func dumpAllUsers() {
+func readAllUsers() {
     resp, err := http.Get(baseURL + "/users")
     if err != nil {
         fmt.Println("Error:", err)
@@ -155,7 +155,7 @@ func dumpAllUsers() {
 
 func loopCLI() {
     reader := bufio.NewReader(os.Stdin)
-	for { // CLI while loop
+	for { // "while" loop
 		fmt.Println("Please enter one of the following actions and press enter: [C] Create [R] Read [U] Update [D] Delete [DD] Dump database [E] Exit")
 		action, _ := reader.ReadString('\n')
 		action = strings.TrimSpace(action)
@@ -168,7 +168,7 @@ func loopCLI() {
 		} else if action == "D" {
 			deleteUser()
 		} else if action == "DD" {
-			dumpAllUsers()
+			readAllUsers()
 		} else if action == "E" {
 			fmt.Println("Exiting CLI and killing app container. Goodbye!")
 			break
