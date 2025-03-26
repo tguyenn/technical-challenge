@@ -37,8 +37,12 @@ func dbUpdateUser(db *gorm.DB, user *User) error {
 }
 
 // delete
-func dbDeleteUser(db *gorm.DB, id int) error {
-    return db.Delete(&User{}, id).Error
+func dbDeleteUser(db *gorm.DB, id int) (bool, error) {
+    result := db.Delete(&User{}, id)
+    if result.Error != nil {
+        return false, result.Error
+    }
+    return result.RowsAffected > 0, nil
 }
 
 // dump data
@@ -95,31 +99,26 @@ func setupRouter(db *gorm.DB) *gin.Engine {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
-        user, err := dbReadUser(db, id)
-        if err != nil {
-            c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+    
+x        var updatedData User
+        if err := c.ShouldBindJSON(&updatedData); err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return
         }
-
-    // buffer the user data so ID is preserved
-    // todo: figure out if there is a better way to do this
-    var updatedData User
-    if err := c.ShouldBindJSON(&updatedData); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    // update the fields of the existing user, but preserve ID
-    user.Name = updatedData.Name
-    user.Email = updatedData.Email
-    user.Password = updatedData.Password
-
-    // Update the user in the database
-    if err := dbUpdateUser(db, user); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
-        return
-    }
-
+    
+        // Use GORM's Updates method to update only the provided fields
+        if err := db.Model(&User{}).Where("id = ?", id).Updates(updatedData).Error; err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+            return
+        }
+    
+        // Fetch the updated user to return in the response
+        var user User
+        if err := db.First(&user, id).Error; err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch updated user"})
+            return
+        }
+    
         c.JSON(http.StatusOK, user)
     })
 
@@ -130,8 +129,13 @@ func setupRouter(db *gorm.DB) *gin.Engine {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
-        if err := dbDeleteUser(db, id); err != nil {
+        deleted, err := dbDeleteUser(db, id)
+        if err != nil {
             c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+            return
+        }
+        if !deleted {
+            c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return
         }
         c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
