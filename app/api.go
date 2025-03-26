@@ -100,7 +100,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
             return
         }
     
-x        var updatedData User
+        var updatedData User
         if err := c.ShouldBindJSON(&updatedData); err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
             return

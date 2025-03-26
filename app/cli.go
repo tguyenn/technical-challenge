@@ -14,6 +14,10 @@ import (
 	"strings"
 )
 
+const baseURL = "http://localhost:8080" 
+var reader = bufio.NewReader(os.Stdin)
+
+
 // print the API responses in a more easily readable format
 func prettyPrintJSON(jsonData []byte) {
 	var prettyJSON bytes.Buffer
@@ -24,10 +28,6 @@ func prettyPrintJSON(jsonData []byte) {
 	}
 	fmt.Println(prettyJSON.String())
 }
-
-const baseURL = "http://localhost:8080" 
-
-var reader = bufio.NewReader(os.Stdin)
 
 func createUser() {
 

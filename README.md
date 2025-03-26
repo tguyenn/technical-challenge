@@ -14,7 +14,6 @@ Hello! This user management application consists of 2 containers:
 If this is your first time using this project, then please run the following in the `techincal_challenge` directory using a Linux environment (i.e. Ubuntu):
 
 ```bash
-export PATH=$PATH:$(pwd)/docker/postgres
 docker-compose build
 ```
 
