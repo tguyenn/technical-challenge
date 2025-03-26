@@ -17,19 +17,19 @@ git clone git@github.com:tguyenn/technical-challenge.git
 cd technical_challenge
 ```
 
-## Option 1 - Build images from source
+### Option 1 - Build images from source
 ```bash
 docker-compose build
 ```
 
-## Option 2 - Pull images from DockerHub
+### Option 2 - Pull images from DockerHub
 ```bash
 docker pull tguyen/technical-challenge-app:latest
 docker pull tguyen/technical-challenge-postgres:latest
 ```
 
 # Launching the services
-Simply launch the services, and you will have a CLI after waiting a moment:
+Simply launch the services, and the CLI Go application will be ready after a moment:
 
 ```bash
 docker-compose run --service-ports -it app
