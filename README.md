@@ -1,11 +1,10 @@
 # Introduction
 
 Hello! This user management application consists of 2 containers:
-1. Front facing GoLang application that allows the user to interact with the database contents
+1. GoLang application that allows interaction with database contents via HTTP requests
 1. PostgreSQL server
 
-* The GoLang CLI application supports actions like creating, reading, updating and deleting database entries.
-    * This CLI sends HTTP requests to port 8080 so the Gin API can process and return data from the database.
+* The GoLang application uses a CLI to support actions like creating, reading, updating and deleting database entries.
 * The PostgreSQL comes prepopulated with some sample user data, which consists of employee's ID, name, email, and password. 
 * Note that database contents are stored in a volume and persist between container sessions.
 
