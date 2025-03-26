@@ -122,7 +122,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
         c.JSON(http.StatusOK, user)
     })
 
-    // Delete
+    // delete
     r.DELETE("/users/:id", func(c *gin.Context) {
         id, err := strconv.Atoi(c.Param("id"))
         if err != nil {
@@ -141,7 +141,7 @@ func setupRouter(db *gorm.DB) *gin.Engine {
         c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
     })
 
-    // Read All
+    // dump database
     r.GET("/users", func(c *gin.Context) {
         users, err := dbDumpUsers(db)
         if err != nil {

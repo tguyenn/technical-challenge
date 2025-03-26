@@ -45,6 +45,6 @@ func main() {
     <-routerReady // wait until API ready
     fmt.Println("Starting the database CLI...")
 
-	StartCLI()
+	loopCLI()
 
 }

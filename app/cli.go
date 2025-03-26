@@ -96,7 +96,7 @@ func updateUser() {
 
     jsonData, _ := json.Marshal(user)
 
-    req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/users/%s", baseURL, id), bytes.NewBuffer(jsonData)) // not natively supported in new/http package
+    req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/users/%s", baseURL, id), bytes.NewBuffer(jsonData)) // not natively supported in net/http package
     if err != nil {
         fmt.Println("Error:", err)
         return
@@ -154,6 +154,7 @@ func readAllUsers() {
 
 
 func loopCLI() {
+    fmt.Println("Welcome to the greatest user management CLI of all time!")
     reader := bufio.NewReader(os.Stdin)
 	for { // "while" loop
 		fmt.Println("Please enter one of the following actions and press enter: [C] Create [R] Read [U] Update [D] Delete [DD] Dump database [E] Exit")
@@ -176,9 +177,4 @@ func loopCLI() {
 			fmt.Println("Invalid action :( try again")
 		}
 	}
-}
-
-func StartCLI() {
-	fmt.Println("Welcome to the greatest user management CLI of all time!")
-	loopCLI()
 }
